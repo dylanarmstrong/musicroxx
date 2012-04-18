@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 from PyQt4 import QtGui
 from PyQt4 import QtCore
-from wind import Ui_MainWindow
+from ui.wind import Ui_MainWindow
 import mpd, os, sys, time, sched, datetime
 
 class MainWindow(QtGui.QMainWindow):
