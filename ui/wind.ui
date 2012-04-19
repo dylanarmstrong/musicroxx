@@ -56,7 +56,7 @@
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QPushButton" name="Play">
+    <widget class="QPushButton" name="play">
      <property name="geometry">
       <rect>
        <x>50</x>
@@ -85,7 +85,7 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="Previous">
+    <widget class="QPushButton" name="previous">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -114,7 +114,7 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="Pause">
+    <widget class="QPushButton" name="pause">
      <property name="geometry">
       <rect>
        <x>90</x>
@@ -172,7 +172,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QPushButton" name="Next">
+    <widget class="QPushButton" name="next">
      <property name="geometry">
       <rect>
        <x>170</x>
@@ -201,7 +201,7 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="Stop">
+    <widget class="QPushButton" name="stop">
      <property name="geometry">
       <rect>
        <x>130</x>
@@ -253,6 +253,34 @@
      </property>
     </widget>
    </widget>
+   <widget class="QListWidget" name="playlist">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>100</y>
+      <width>391</width>
+      <height>231</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="acceptDrops">
+     <bool>true</bool>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -271,7 +299,17 @@
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionViewPlaylist"/>
+    <addaction name="actionLibrary"/>
+    <addaction name="separator"/>
+    <addaction name="actionViewCurrentSong"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionUpdate">
@@ -290,14 +328,38 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
+  <action name="actionViewPlaylist">
+   <property name="text">
+    <string>Playlist</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionLibrary">
+   <property name="text">
+    <string>Library</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionViewCurrentSong">
+   <property name="text">
+    <string>Current Song</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+U</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>songprg</tabstop>
-  <tabstop>Previous</tabstop>
-  <tabstop>Play</tabstop>
-  <tabstop>Pause</tabstop>
-  <tabstop>Stop</tabstop>
-  <tabstop>Next</tabstop>
+  <tabstop>previous</tabstop>
+  <tabstop>play</tabstop>
+  <tabstop>pause</tabstop>
+  <tabstop>stop</tabstop>
+  <tabstop>next</tabstop>
  </tabstops>
  <resources/>
  <connections>
