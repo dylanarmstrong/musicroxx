@@ -25,8 +25,9 @@ THE SOFTWARE.
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from ui.wind import Ui_MainWindow
-import mpd, os, sys, time, sched, datetime
+import mpd, os, sys, time, sched, datetime, socket
 
+# Song object to avoid unnecessary threading
 class Song(object):
   def __init__(self, song_id, artist="", album="", filename=""):
     self.song_id = song_id
@@ -34,48 +35,101 @@ class Song(object):
     self.album = album
     self.filename = filename
 
+# Handles all calls to MPD
+class MPD(object):
+  def __init__(self):
+    self.client = mpd.MPDClient()
+
+  def connect(self, i=0):
+    try:
+      self.client.connect("localhost", 6600)
+    except mpd.ConnectionError, e:
+      self.client.disconnect()
+      if i < 5:
+        self.connect(self, i + 1)
+      else:
+        exit(1)
+    except socket.error:
+      print "Could not connect to MPD"
+      exit(1)
+
+  def update_db(self):
+    self.connect()
+    self.client.update()
+
+  def seek(self, pos, song_id):
+    self.connect()
+    self.client.seek(song_id, pos)
+
+  def play(self):
+    self.connect()
+    self.client.play()
+
+  def stop(self):
+    self.connect()
+    self.client.stop()
+
+  def pause(self):
+    self.connect()
+    self.client.pause()
+
+  def next(self):
+    self.connect()
+    self.client.next()
+
+  def previous(self):
+    self.connect()
+    self.client.previous()
+
+  def playlist(self):
+    self.connect()
+    return self.client.playlist()
+
 class MainWindow(QtGui.QMainWindow):
-  client = mpd.MPDClient()
 
   def __init__(self, parent=None):
     QtGui.QWidget.__init__(self, parent)
 
+    self.client = MPD()
+
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
     self.ui.playlist.setVisible(False)
+
     self.songs = []
+
     self.init_signals()
 
   def init_signals(self):
     self.thread = retrieve_information()
 
-    #buttons
+    # Buttons
     QtCore.QObject.connect(self.ui.play, \
-        QtCore.SIGNAL("clicked()"), self.play)
+        QtCore.SIGNAL("clicked()"), self.client.play)
     QtCore.QObject.connect(self.ui.stop, \
-        QtCore.SIGNAL("clicked()"), self.stop)
+        QtCore.SIGNAL("clicked()"), self.client.stop)
     QtCore.QObject.connect(self.ui.pause, \
-        QtCore.SIGNAL("clicked()"), self.pause)
+        QtCore.SIGNAL("clicked()"), self.client.pause)
     QtCore.QObject.connect(self.ui.next, \
-        QtCore.SIGNAL("clicked()"), self.next)
+        QtCore.SIGNAL("clicked()"), self.client.next)
     QtCore.QObject.connect(self.ui.previous, \
-        QtCore.SIGNAL("clicked()"), self.previous)
+        QtCore.SIGNAL("clicked()"), self.client.previous)
     QtCore.QObject.connect(self.ui.songprg, \
         QtCore.SIGNAL("valueChanged(int)"), self.set_seek)
 
-    #menu items
+    # Menu items
     QtCore.QObject.connect(self.ui.actionViewPlaylist, \
         QtCore.SIGNAL("triggered()"), self.view_playlist)
     QtCore.QObject.connect(self.ui.actionUpdateDB, \
-        QtCore.SIGNAL("triggered()"), self.update_db)
+        QtCore.SIGNAL("triggered()"), self.client.update_db)
     QtCore.QObject.connect(self.ui.actionViewCurrentSong,\
         QtCore.SIGNAL("triggered()"), self.highlight_song)
 
-    #playlist
+    # Playlist
     QtCore.QObject.connect(self.ui.playlist, \
         QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.set_song)
 
-    #threads
+    # Threads
     QtCore.QObject.connect(self.thread, self.thread.songname_signal, \
         self.song_label)
     QtCore.QObject.connect(self.thread, self.thread.songseek_signal, \
@@ -88,9 +142,6 @@ class MainWindow(QtGui.QMainWindow):
         self.bind_list)
 
     self.thread.start()
-  def update_db(self):
-    self.connect()
-    self.client.update()
 
   def view_playlist(self):
     if self.ui.playlist.isVisible():
@@ -99,10 +150,9 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.playlist.setVisible(True)
 
   def set_song(self, item):
-    self.seek(0, int(item.data(QtCore.Qt.UserRole).toInt()[0]))
+    self.client.seek(0, int(item.data(QtCore.Qt.UserRole).toInt()[0]))
 
   def bind_list(self, force=False):
-    self.connect()
     i = 0
     for track in self.client.playlist():
       filename = track.split(': ')
@@ -117,7 +167,6 @@ class MainWindow(QtGui.QMainWindow):
       i = i + 1
 
   def highlight_song(self):
-    self.connect()
     i = 0
     for track in self.client.playlist():
       filename = track.split(': ')
@@ -127,11 +176,9 @@ class MainWindow(QtGui.QMainWindow):
       i = i + 1
 
   def song_label(self, songnm):
-    self.connect()
     self.ui.songlb.setText(songnm)
 
   def song_seek(self, songseek):
-    self.connect()
     songseek_lst = songseek.split(':')
     self.song_length = int(songseek_lst[1])
 
@@ -158,49 +205,13 @@ class MainWindow(QtGui.QMainWindow):
   def state(self, state):
     self.ui.statusbar.showMessage("Status: %s" % (state))
 
-  def connect(self):
-    try:
-      self.client.connect("localhost", 6600)
-    except mpd.ConnectionError, e:
-      self.client.disconnect()
-      self.client.connect("localhost", 6600)
-
-  def seek(self, pos, _song_id=-1):
-    if _song_id == -1:
-      _song_id = self.song_id
-    self.connect()
-    self.client.seek(_song_id, pos)
-
-  def play(self):
-    self.connect()
-    self.client.play()
-
-  def stop(self):
-    self.connect()
-    self.client.stop()
-
-  def pause(self):
-    self.connect()
-    self.client.pause()
-
-  def next(self):
-    self.connect()
-    self.songid = -1
-    self.song_length = -1
-    self.client.next()
-
-  def previous(self):
-    self.connect()
-    self.songid = -1
-    self.song_length = -1
-    self.client.previous()
-
 class retrieve_information(QtCore.QThread):
-  client = mpd.MPDClient()
   scheduler = sched.scheduler(time.time, time.sleep)
 
   def __init__(self, parent=None):
     QtCore.QThread.__init__(self, parent)
+
+    self.client = MPD()
 
     self.songname_signal = QtCore.SIGNAL("songnm_thread")
     self.songseek_signal = QtCore.SIGNAL("songlen_thread")
@@ -210,14 +221,8 @@ class retrieve_information(QtCore.QThread):
 
     self.exiting = False
 
-  def connect(self):
-    try:
-      self.client.connect("localhost", 6600)
-    except mpd.ConnectionError, e:
-      pass
-
   def song_info(self):
-    self.connect()
+    self.client.connect()
     song = self.client.currentsong()
     status = self.client.status()
     try:
