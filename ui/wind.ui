@@ -23,7 +23,11 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>musicroxx</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>res/icons/go-home.svg</normaloff>res/icons/go-home.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QFrame" name="frame">
