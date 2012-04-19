@@ -65,6 +65,9 @@
        <height>41</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">border-color: rgb(38, 38, 38);</string>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -78,6 +81,9 @@
        <height>24</height>
       </size>
      </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QPushButton" name="Previous">
      <property name="geometry">
@@ -87,6 +93,9 @@
        <width>41</width>
        <height>41</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-color: rgb(38, 38, 38);</string>
      </property>
      <property name="text">
       <string/>
@@ -101,6 +110,9 @@
        <height>24</height>
       </size>
      </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QPushButton" name="Pause">
      <property name="geometry">
@@ -110,6 +122,9 @@
        <width>41</width>
        <height>41</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-color: rgb(38, 38, 38);</string>
      </property>
      <property name="text">
       <string/>
@@ -123,6 +138,9 @@
        <width>24</width>
        <height>24</height>
       </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QLabel" name="songprg_num">
@@ -163,6 +181,9 @@
        <height>41</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">border-color: rgb(38, 38, 38);</string>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -176,6 +197,9 @@
        <height>24</height>
       </size>
      </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QPushButton" name="Stop">
      <property name="geometry">
@@ -185,6 +209,9 @@
        <width>41</width>
        <height>41</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-color: rgb(38, 38, 38);</string>
      </property>
      <property name="text">
       <string/>
@@ -198,6 +225,9 @@
        <width>24</width>
        <height>24</height>
       </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QLabel" name="songlb">
@@ -263,10 +293,10 @@
  </widget>
  <tabstops>
   <tabstop>songprg</tabstop>
+  <tabstop>Previous</tabstop>
   <tabstop>Play</tabstop>
   <tabstop>Pause</tabstop>
   <tabstop>Stop</tabstop>
-  <tabstop>Previous</tabstop>
   <tabstop>Next</tabstop>
  </tabstops>
  <resources/>
