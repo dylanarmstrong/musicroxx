@@ -27,13 +27,26 @@ from PyQt4 import QtCore
 from ui.wind import Ui_MainWindow
 import mpd, os, sys, time, sched, datetime, socket
 
+# Global flags
+SHOW_FILENAME = 0
+SHOW_ARTIST = 1
+
 # Song object to avoid unnecessary threading
 class Song(object):
-  def __init__(self, song_id, artist="", album="", filename=""):
+  def __init__(self, song_id, artist, title, filename=""):
     self.song_id = song_id
     self.artist = artist
     self.album = album
     self.filename = filename
+
+  def get_song_label(self, flags):
+    if flags:
+      if flags == SHOW_FILENAME:
+        return '%s' % (self.filename)
+      elif flags == SHOW_ARTIST:
+        return '%s - %s' % (self.artist, self.title)
+      else:
+        return '%s' % (self.filename)
 
 # Handles all calls to MPD
 class MPD(object):
@@ -46,8 +59,9 @@ class MPD(object):
     except mpd.ConnectionError, e:
       self.client.disconnect()
       if i < 5:
-        self.connect(self, i + 1)
+        self.connect(i + 1)
       else:
+        print "Could not connect to MPD"
         exit(1)
     except socket.error:
       print "Could not connect to MPD"
@@ -84,6 +98,14 @@ class MPD(object):
   def playlist(self):
     self.connect()
     return self.client.playlist()
+
+  def currentsong(self):
+    self.connect()
+    return self.client.currentsong()
+
+  def status(self):
+    self.connect()
+    return self.client.status()
 
 class MainWindow(QtGui.QMainWindow):
 
@@ -130,16 +152,10 @@ class MainWindow(QtGui.QMainWindow):
         QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.set_song)
 
     # Threads
-    QtCore.QObject.connect(self.thread, self.thread.songname_signal, \
-        self.song_label)
-    QtCore.QObject.connect(self.thread, self.thread.songseek_signal, \
-        self.song_seek)
-    QtCore.QObject.connect(self.thread, self.thread.songid_signal, \
-        self.song_id)
+    QtCore.QObject.connect(self.thread, self.thread.song_signal, \
+        self.act_song)
     QtCore.QObject.connect(self.thread, self.thread.state_signal, \
-        self.state)
-    QtCore.QObject.connect(self.thread, self.thread.playlist_signal, \
-        self.bind_list)
+        self.act_state)
 
     self.thread.start()
 
@@ -152,6 +168,7 @@ class MainWindow(QtGui.QMainWindow):
   def set_song(self, item):
     self.client.seek(0, int(item.data(QtCore.Qt.UserRole).toInt()[0]))
 
+  #TODO: I'm sure this could be majorly cleaned up..
   def bind_list(self, force=False):
     i = 0
     for track in self.client.playlist():
@@ -180,17 +197,20 @@ class MainWindow(QtGui.QMainWindow):
 
   def song_seek(self, songseek):
     songseek_lst = songseek.split(':')
-    self.song_length = int(songseek_lst[1])
+    song_length = int(songseek_lst[1])
 
+    # Exception for when mpd is stopped
     try:
       songseek_prg = float(songseek_lst[0]) / float(songseek_lst[1]) * 100
     except ZeroDivisionError:
       songseek_prg = 0
 
+    # Block signals so that seek doesn't misinterpet user actions
     self.ui.songprg.blockSignals(True)
     self.ui.songprg.setValue(songseek_prg)
     self.ui.songprg.blockSignals(False)
 
+    # Set user readable song length
     pos = str(datetime.timedelta(seconds=int(songseek_lst[0])))
     length = str(datetime.timedelta(seconds=int(songseek_lst[1])))
     self.ui.songprg_num.setText('%s / %s' % (pos, length))
@@ -213,44 +233,42 @@ class retrieve_information(QtCore.QThread):
 
     self.client = MPD()
 
-    self.songname_signal = QtCore.SIGNAL("songnm_thread")
-    self.songseek_signal = QtCore.SIGNAL("songlen_thread")
-    self.songid_signal = QtCore.SIGNAL("songid_thread")
+    self.song_signal = QtCore.SIGNAL("song_thread")
     self.state_signal = QtCore.SIGNAL("state_thread")
-    self.playlist_signal = QtCore.SIGNAL("playlist_thread")
 
     self.exiting = False
 
   def song_info(self):
-    self.client.connect()
-    song = self.client.currentsong()
+    current_song = self.client.currentsong()
     status = self.client.status()
-    try:
-      songnm = '%s - %s' % (song['artist'], song['title'])
-    except KeyError:
-      songnm = song['file']
 
     try:
-      songseek = status['time']
+      song_artist = current_song['artist']
+      song_title = current_song['title']
+      song_filename = current_song['file']
     except KeyError:
-      songseek = "0:0"
+      song_artist = "Unknown"
+      song_title = "Unknown"
+      song_filename = current_song['file']
 
     try:
-      songid = status['songid']
+      song_seek = status['time']
     except KeyError:
-      songid = 0
+      song_seek = "0:0"
+
+    try:
+      song_id = status['songid']
+    except KeyError:
+      song_id = 0
 
     try:
       state = status['state']
     except KeyError:
       state = 'error'
 
-    self.emit(self.songname_signal, songnm)
-    self.emit(self.songseek_signal, songseek)
-    self.emit(self.songid_signal, songid)
+    song = Song(song_id, song_artist, song_title, song_filename)
+    self.emit(self.song_signal, song)
     self.emit(self.state_signal, state)
-    self.emit(self.playlist_signal)
-    return songnm
 
   def timed_call(self, calls_per_second, callback, *args, **kw):
     period = 1.0 / calls_per_second
