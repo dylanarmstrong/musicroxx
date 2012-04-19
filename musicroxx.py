@@ -27,59 +27,81 @@ from PyQt4 import QtCore
 from ui.wind import Ui_MainWindow
 import mpd, os, sys, time, sched, datetime
 
+class Song(object):
+  def __init__(self, song_id, artist="", album="", filename=""):
+    self.song_id = song_id
+    self.artist = artist
+    self.album = album
+    self.filename = filename
+
 class MainWindow(QtGui.QMainWindow):
   client = mpd.MPDClient()
 
   def __init__(self, parent=None):
     QtGui.QWidget.__init__(self, parent)
+
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
-
-    self.connect()
-    self.thread = retrieve_information()
     self.ui.playlist.setVisible(False)
-    self.song_id = -1
-    self.song_length = -1
+    self.songs = []
+    self.init_signals()
+
+  def init_signals(self):
+    self.thread = retrieve_information()
 
     #buttons
-    QtCore.QObject.connect(self.ui.play, QtCore.SIGNAL("clicked()"), self.play)
-    QtCore.QObject.connect(self.ui.stop, QtCore.SIGNAL("clicked()"), self.stop)
-    QtCore.QObject.connect(self.ui.pause, QtCore.SIGNAL("clicked()"), self.pause)
-    QtCore.QObject.connect(self.ui.next, QtCore.SIGNAL("clicked()"), self.next)
-    QtCore.QObject.connect(self.ui.previous, QtCore.SIGNAL("clicked()"), self.previous)
-    QtCore.QObject.connect(self.ui.songprg, QtCore.SIGNAL("valueChanged(int)"), self.setsongseek)
+    QtCore.QObject.connect(self.ui.play, \
+        QtCore.SIGNAL("clicked()"), self.play)
+    QtCore.QObject.connect(self.ui.stop, \
+        QtCore.SIGNAL("clicked()"), self.stop)
+    QtCore.QObject.connect(self.ui.pause, \
+        QtCore.SIGNAL("clicked()"), self.pause)
+    QtCore.QObject.connect(self.ui.next, \
+        QtCore.SIGNAL("clicked()"), self.next)
+    QtCore.QObject.connect(self.ui.previous, \
+        QtCore.SIGNAL("clicked()"), self.previous)
+    QtCore.QObject.connect(self.ui.songprg, \
+        QtCore.SIGNAL("valueChanged(int)"), self.set_seek)
 
     #menu items
-    QtCore.QObject.connect(self.ui.actionViewPlaylist, QtCore.SIGNAL("triggered()"), self.viewplaylist)
-    QtCore.QObject.connect(self.ui.actionUpdateDB, QtCore.SIGNAL("triggered()"), self.updatedb)
-    QtCore.QObject.connect(self.ui.actionViewCurrentSong, QtCore.SIGNAL("triggered()"), self.viewcurrentsong)
+    QtCore.QObject.connect(self.ui.actionViewPlaylist, \
+        QtCore.SIGNAL("triggered()"), self.view_playlist)
+    QtCore.QObject.connect(self.ui.actionUpdateDB, \
+        QtCore.SIGNAL("triggered()"), self.update_db)
+    QtCore.QObject.connect(self.ui.actionViewCurrentSong,\
+        QtCore.SIGNAL("triggered()"), self.highlight_song)
 
     #playlist
-    QtCore.QObject.connect(self.ui.playlist, QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.setsong)
+    QtCore.QObject.connect(self.ui.playlist, \
+        QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.set_song)
 
     #threads
-    QtCore.QObject.connect(self.thread, self.thread.songnm_signal, self.songlb)
-    QtCore.QObject.connect(self.thread, self.thread.songseek_signal, self.songseek)
-    QtCore.QObject.connect(self.thread, self.thread.songid_signal, self.songid)
-    QtCore.QObject.connect(self.thread, self.thread.state_signal, self.state)
-    QtCore.QObject.connect(self.thread, self.thread.playlist_signal, self.bindlist)
+    QtCore.QObject.connect(self.thread, self.thread.songname_signal, \
+        self.song_label)
+    QtCore.QObject.connect(self.thread, self.thread.songseek_signal, \
+        self.song_seek)
+    QtCore.QObject.connect(self.thread, self.thread.songid_signal, \
+        self.song_id)
+    QtCore.QObject.connect(self.thread, self.thread.state_signal, \
+        self.state)
+    QtCore.QObject.connect(self.thread, self.thread.playlist_signal, \
+        self.bind_list)
 
     self.thread.start()
-
-  def updatedb(self):
+  def update_db(self):
     self.connect()
     self.client.update()
 
-  def viewplaylist(self):
+  def view_playlist(self):
     if self.ui.playlist.isVisible():
       self.ui.playlist.setVisible(False)
     else:
       self.ui.playlist.setVisible(True)
 
-  def setsong(self, item):
+  def set_song(self, item):
     self.seek(0, int(item.data(QtCore.Qt.UserRole).toInt()[0]))
 
-  def bindlist(self, force=False):
+  def bind_list(self, force=False):
     self.connect()
     i = 0
     for track in self.client.playlist():
@@ -94,7 +116,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.playlist.addItem(item)
       i = i + 1
 
-  def viewcurrentsong(self):
+  def highlight_song(self):
     self.connect()
     i = 0
     for track in self.client.playlist():
@@ -104,15 +126,19 @@ class MainWindow(QtGui.QMainWindow):
         possible_item[0].setSelected(True)
       i = i + 1
 
-  def songlb(self, songnm):
+  def song_label(self, songnm):
     self.connect()
     self.ui.songlb.setText(songnm)
 
-  def songseek(self, songseek):
+  def song_seek(self, songseek):
     self.connect()
     songseek_lst = songseek.split(':')
     self.song_length = int(songseek_lst[1])
-    songseek_prg = float(songseek_lst[0]) / float(songseek_lst[1]) * 100
+
+    try:
+      songseek_prg = float(songseek_lst[0]) / float(songseek_lst[1]) * 100
+    except ZeroDivisionError:
+      songseek_prg = 0
 
     self.ui.songprg.blockSignals(True)
     self.ui.songprg.setValue(songseek_prg)
@@ -122,10 +148,10 @@ class MainWindow(QtGui.QMainWindow):
     length = str(datetime.timedelta(seconds=int(songseek_lst[1])))
     self.ui.songprg_num.setText('%s / %s' % (pos, length))
 
-  def songid(self, songid):
+  def song_id(self, songid):
     self.song_id = songid
 
-  def setsongseek(self, songseek):
+  def set_seek(self, songseek):
     pos = (songseek * self.song_length / 100)
     self.seek(pos)
 
@@ -176,7 +202,7 @@ class retrieve_information(QtCore.QThread):
   def __init__(self, parent=None):
     QtCore.QThread.__init__(self, parent)
 
-    self.songnm_signal = QtCore.SIGNAL("songnm_thread")
+    self.songname_signal = QtCore.SIGNAL("songnm_thread")
     self.songseek_signal = QtCore.SIGNAL("songlen_thread")
     self.songid_signal = QtCore.SIGNAL("songid_thread")
     self.state_signal = QtCore.SIGNAL("state_thread")
@@ -214,7 +240,7 @@ class retrieve_information(QtCore.QThread):
     except KeyError:
       state = 'error'
 
-    self.emit(self.songnm_signal, songnm)
+    self.emit(self.songname_signal, songnm)
     self.emit(self.songseek_signal, songseek)
     self.emit(self.songid_signal, songid)
     self.emit(self.state_signal, state)
