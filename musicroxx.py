@@ -51,7 +51,7 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.thread, self.thread.songseek_signal, self.songseek)
     QtCore.QObject.connect(self.thread, self.thread.songid_signal, self.songid)
     QtCore.QObject.connect(self.thread, self.thread.state_signal, self.state)
-    QtCore.QObject.connect(self.thread, self.thread.playlist_signal, self.bind_list)
+    #QtCore.QObject.connect(self.thread, self.thread.playlist_signal, self.bind_list)
 
     self.thread.start()
 
