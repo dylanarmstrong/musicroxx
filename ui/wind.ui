@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>403</width>
-    <height>160</height>
+    <width>390</width>
+    <height>139</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -70,7 +70,7 @@
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>./res/icons/gtk-media-play-ltr.svg</normaloff>./res/icons/gtk-media-play-ltr.svg</iconset>
+       <normaloff>res/icons/gtk-media-play-ltr.svg</normaloff>res/icons/gtk-media-play-ltr.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -93,7 +93,7 @@
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>./res/icons/player_start.svg</normaloff>./res/icons/player_start.svg</iconset>
+       <normaloff>res/icons/player_start.svg</normaloff>res/icons/player_start.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -116,7 +116,7 @@
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>./res/icons/gtk-media-pause.svg</normaloff>./res/icons/gtk-media-pause.svg</iconset>
+       <normaloff>res/icons/gtk-media-pause.svg</normaloff>res/icons/gtk-media-pause.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -168,7 +168,7 @@
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>./res/icons/player_end.svg</normaloff>./res/icons/player_end.svg</iconset>
+       <normaloff>res/icons/player_end.svg</normaloff>res/icons/player_end.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -191,7 +191,7 @@
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>./res/icons/gtk-media-stop.svg</normaloff>./res/icons/gtk-media-stop.svg</iconset>
+       <normaloff>res/icons/gtk-media-stop.svg</normaloff>res/icons/gtk-media-stop.svg</iconset>
      </property>
      <property name="iconSize">
       <size>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wind.ui'
 #
-# Created: Thu Apr 19 13:56:57 2012
+# Created: Thu Apr 19 14:10:04 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setMinimumSize(QtCore.QSize(403, 160))
+        MainWindow.setMinimumSize(QtCore.QSize(390, 139))
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.frame = QtGui.QFrame(self.centralwidget)
@@ -42,7 +42,7 @@ class Ui_MainWindow(object):
         self.Play.setGeometry(QtCore.QRect(50, 40, 41, 41))
         self.Play.setText(_fromUtf8(""))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("./res/icons/gtk-media-play-ltr.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8("res/icons/gtk-media-play-ltr.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.Play.setIcon(icon)
         self.Play.setIconSize(QtCore.QSize(24, 24))
         self.Play.setObjectName(_fromUtf8("Play"))
@@ -50,7 +50,7 @@ class Ui_MainWindow(object):
         self.Previous.setGeometry(QtCore.QRect(10, 40, 41, 41))
         self.Previous.setText(_fromUtf8(""))
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8("./res/icons/player_start.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8("res/icons/player_start.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.Previous.setIcon(icon1)
         self.Previous.setIconSize(QtCore.QSize(24, 24))
         self.Previous.setObjectName(_fromUtf8("Previous"))
@@ -58,7 +58,7 @@ class Ui_MainWindow(object):
         self.Pause.setGeometry(QtCore.QRect(90, 40, 41, 41))
         self.Pause.setText(_fromUtf8(""))
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(_fromUtf8("./res/icons/gtk-media-pause.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(_fromUtf8("res/icons/gtk-media-pause.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.Pause.setIcon(icon2)
         self.Pause.setIconSize(QtCore.QSize(24, 24))
         self.Pause.setObjectName(_fromUtf8("Pause"))
@@ -75,7 +75,7 @@ class Ui_MainWindow(object):
         self.Next.setGeometry(QtCore.QRect(170, 40, 41, 41))
         self.Next.setText(_fromUtf8(""))
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(_fromUtf8("./res/icons/player_end.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(_fromUtf8("res/icons/player_end.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.Next.setIcon(icon3)
         self.Next.setIconSize(QtCore.QSize(24, 24))
         self.Next.setObjectName(_fromUtf8("Next"))
@@ -83,7 +83,7 @@ class Ui_MainWindow(object):
         self.Stop.setGeometry(QtCore.QRect(130, 40, 41, 41))
         self.Stop.setText(_fromUtf8(""))
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(_fromUtf8("./res/icons/gtk-media-stop.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(_fromUtf8("res/icons/gtk-media-stop.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.Stop.setIcon(icon4)
         self.Stop.setIconSize(QtCore.QSize(24, 24))
         self.Stop.setObjectName(_fromUtf8("Stop"))
