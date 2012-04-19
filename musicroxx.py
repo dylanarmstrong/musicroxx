@@ -175,7 +175,8 @@ class MainWindow(QtGui.QMainWindow):
       filename = track.split(': ')
       if force:
         self.ui.playlist.clear()
-      possible_item = self.ui.playlist.findItems(filename[1], QtCore.Qt.MatchExactly)
+      possible_item = self.ui.playlist.findItems(filename[1], \
+          QtCore.Qt.MatchExactly)
       if not possible_item:
         item = QtGui.QListWidgetItem(filename[1])
         item.setData(QtCore.Qt.UserRole, i)
@@ -187,7 +188,8 @@ class MainWindow(QtGui.QMainWindow):
     i = 0
     for track in self.client.playlist():
       filename = track.split(': ')
-      possible_item = self.ui.playlist.findItems(filename[1], QtCore.Qt.MatchExactly)
+      possible_item = self.ui.playlist.findItems(filename[1], \
+          QtCore.Qt.MatchExactly)
       if possible_item and i == int(self.song_id):
         possible_item[0].setSelected(True)
       i = i + 1
