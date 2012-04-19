@@ -41,18 +41,23 @@ class MainWindow(QtGui.QMainWindow):
     self.song_id = -1
     self.song_length = -1
 
-    #ui signals
+    #buttons
     QtCore.QObject.connect(self.ui.play, QtCore.SIGNAL("clicked()"), self.play)
     QtCore.QObject.connect(self.ui.stop, QtCore.SIGNAL("clicked()"), self.stop)
     QtCore.QObject.connect(self.ui.pause, QtCore.SIGNAL("clicked()"), self.pause)
     QtCore.QObject.connect(self.ui.next, QtCore.SIGNAL("clicked()"), self.next)
     QtCore.QObject.connect(self.ui.previous, QtCore.SIGNAL("clicked()"), self.previous)
     QtCore.QObject.connect(self.ui.songprg, QtCore.SIGNAL("valueChanged(int)"), self.setsongseek)
+
+    #menu items
     QtCore.QObject.connect(self.ui.actionViewPlaylist, QtCore.SIGNAL("triggered()"), self.viewplaylist)
+    QtCore.QObject.connect(self.ui.actionUpdateDB, QtCore.SIGNAL("triggered()"), self.updatedb)
     QtCore.QObject.connect(self.ui.actionViewCurrentSong, QtCore.SIGNAL("triggered()"), self.viewcurrentsong)
+
+    #playlist
     QtCore.QObject.connect(self.ui.playlist, QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.setsong)
 
-    #thread signals
+    #threads
     QtCore.QObject.connect(self.thread, self.thread.songnm_signal, self.songlb)
     QtCore.QObject.connect(self.thread, self.thread.songseek_signal, self.songseek)
     QtCore.QObject.connect(self.thread, self.thread.songid_signal, self.songid)
@@ -60,6 +65,10 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.thread, self.thread.playlist_signal, self.bindlist)
 
     self.thread.start()
+
+  def updatedb(self):
+    self.connect()
+    self.client.update()
 
   def viewplaylist(self):
     if self.ui.playlist.isVisible():

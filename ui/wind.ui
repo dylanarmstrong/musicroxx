@@ -295,7 +295,7 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionUpdate"/>
+    <addaction name="actionUpdateDB"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -312,7 +312,7 @@
    <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionUpdate">
+  <action name="actionUpdateDB">
    <property name="text">
     <string>Update DB</string>
    </property>

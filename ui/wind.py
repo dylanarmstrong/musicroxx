@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wind.ui'
 #
-# Created: Thu Apr 19 15:56:56 2012
+# Created: Thu Apr 19 16:02:35 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -128,8 +128,8 @@ class Ui_MainWindow(object):
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
-        self.actionUpdate = QtGui.QAction(MainWindow)
-        self.actionUpdate.setObjectName(_fromUtf8("actionUpdate"))
+        self.actionUpdateDB = QtGui.QAction(MainWindow)
+        self.actionUpdateDB.setObjectName(_fromUtf8("actionUpdateDB"))
         self.actionQuit = QtGui.QAction(MainWindow)
         self.actionQuit.setObjectName(_fromUtf8("actionQuit"))
         self.actionViewPlaylist = QtGui.QAction(MainWindow)
@@ -138,7 +138,7 @@ class Ui_MainWindow(object):
         self.actionLibrary.setObjectName(_fromUtf8("actionLibrary"))
         self.actionViewCurrentSong = QtGui.QAction(MainWindow)
         self.actionViewCurrentSong.setObjectName(_fromUtf8("actionViewCurrentSong"))
-        self.menuFile.addAction(self.actionUpdate)
+        self.menuFile.addAction(self.actionUpdateDB)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
         self.menuView.addAction(self.actionViewPlaylist)
@@ -161,8 +161,8 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionUpdate.setText(QtGui.QApplication.translate("MainWindow", "Update DB", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionUpdate.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+U", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionUpdateDB.setText(QtGui.QApplication.translate("MainWindow", "Update DB", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionUpdateDB.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+U", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setText(QtGui.QApplication.translate("MainWindow", "Quit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Q", None, QtGui.QApplication.UnicodeUTF8))
         self.actionViewPlaylist.setText(QtGui.QApplication.translate("MainWindow", "Playlist", None, QtGui.QApplication.UnicodeUTF8))
