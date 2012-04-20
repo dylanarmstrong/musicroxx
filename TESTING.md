@@ -1,0 +1,1 @@
+The testing branch is not meant to be a stable testing environment for users to report bugs on and such. It's designed for developers who understand that this is legitimately buggy code at best and outright broken at worst.
