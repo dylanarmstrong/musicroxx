@@ -397,7 +397,7 @@
     <string>Play</string>
    </property>
    <property name="shortcut">
-    <string>Return</string>
+    <string>Space</string>
    </property>
   </action>
   <action name="actionPause">
