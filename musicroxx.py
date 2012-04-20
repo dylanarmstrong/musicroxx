@@ -54,6 +54,12 @@ class Song(object):
   def get_position(self):
     return self.song_length.split(':')[0]
 
+class State(object):
+  def __init__(self, mpd_state, random, repeat_all):
+    self.mpd_state = mpd_state
+    self.random = random
+    self.repeat_all = repeat_all
+
 # Handles all calls to MPD
 class MPD(object):
   def __init__(self):
@@ -72,6 +78,24 @@ class MPD(object):
     except socket.error:
       print "Could not connect to MPD"
       exit(1)
+
+  def toggle_repeat_all(self, state):
+    self.connect()
+    if state.repeat_all:
+      state.repeat_all = 0
+      self.client.repeat(0)
+    else:
+      state.repeat_all = 1
+      self.client.repeat(1)
+
+  def toggle_random(self, state):
+    self.connect()
+    if state.random:
+      state.random = 0
+      self.client.random(0)
+    else:
+      state.random = 1
+      self.client.random(1)
 
   def update_db(self):
     self.connect()
@@ -125,6 +149,7 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.playlist.setVisible(False)
     self.song_label_type = SHOW_FILENAME
     self.current_song = None
+    self.current_state = None
 
     self.init_signals()
 
@@ -150,8 +175,24 @@ class MainWindow(QtGui.QMainWindow):
         QtCore.SIGNAL("triggered()"), self.view_playlist)
     QtCore.QObject.connect(self.ui.actionUpdateDB, \
         QtCore.SIGNAL("triggered()"), self.client.update_db)
-    QtCore.QObject.connect(self.ui.actionViewCurrentSong,\
+    QtCore.QObject.connect(self.ui.actionViewCurrentSong, \
         QtCore.SIGNAL("triggered()"), self.highlight_current_song)
+    QtCore.QObject.connect(self.ui.actionRepeatAll, \
+        QtCore.SIGNAL("triggered()"), self.toggle_repeat_all)
+    QtCore.QObject.connect(self.ui.actionRandom, \
+        QtCore.SIGNAL("triggered()"), self.toggle_random)
+
+    # Menu items same as buttons
+    QtCore.QObject.connect(self.ui.actionPlay, \
+        QtCore.SIGNAL("triggered()"), self.client.play)
+    QtCore.QObject.connect(self.ui.actionStop, \
+        QtCore.SIGNAL("triggered()"), self.client.stop)
+    QtCore.QObject.connect(self.ui.actionPause, \
+        QtCore.SIGNAL("triggered()"), self.client.pause)
+    QtCore.QObject.connect(self.ui.actionNext, \
+        QtCore.SIGNAL("triggered()"), self.client.next)
+    QtCore.QObject.connect(self.ui.actionPrevious, \
+        QtCore.SIGNAL("triggered()"), self.client.previous)
 
     # Playlist
     QtCore.QObject.connect(self.ui.playlist, \
@@ -165,6 +206,12 @@ class MainWindow(QtGui.QMainWindow):
         self.act_state)
 
     self.thread.start()
+
+  def toggle_repeat_all(self):
+    self.client.toggle_repeat_all(self.current_state)
+
+  def toggle_random(self):
+    self.client.toggle_random(self.current_state)
 
   def act_song(self, song):
     # Song label
@@ -192,7 +239,24 @@ class MainWindow(QtGui.QMainWindow):
 
   #TODO: change state to more readable variation such as playing, paused, etc.
   def act_state(self, state):
-    self.ui.statusbar.showMessage("Status: %s" % (state))
+    self.current_state = state
+
+    if state.repeat_all:
+      repeat_all = "On"
+      self.ui.actionRepeatAll.setChecked(True)
+    else:
+      repeat_all = "Off"
+      self.ui.actionRepeatAll.setChecked(False)
+
+    if state.random:
+      random = "On"
+      self.ui.actionRandom.setChecked(True)
+    else:
+      random = "Off"
+      self.ui.actionRandom.setChecked(False)
+
+    self.ui.statusbar.showMessage("Status: %s | Random: %s | Repeat All: %s" \
+        % (state.mpd_state, random, repeat_all))
 
   #TODO: I'm sure this could be majorly cleaned up..
   def act_playlist(self, force=False):
@@ -241,7 +305,6 @@ class retrieve_information(QtCore.QThread):
     QtCore.QThread.__init__(self, parent)
 
     self.client = MPD()
-    self.songs = []
 
     self.song_signal = QtCore.SIGNAL("song_thread")
     self.state_signal = QtCore.SIGNAL("state_thread")
@@ -251,7 +314,6 @@ class retrieve_information(QtCore.QThread):
   def song_info(self):
     current_song = self.client.currentsong()
     status = self.client.status()
-
     try:
       song_artist = current_song['artist']
       song_title = current_song['title']
@@ -272,12 +334,17 @@ class retrieve_information(QtCore.QThread):
       song_id = -1
 
     try:
-      state = status['state']
+      mpd_state = status['state']
+      repeat_all = int(status['repeat'])
+      random = int(status['random'])
     except KeyError:
-      state = 'error'
+      mpd_state = 'error'
+      repeat_all = False
+      random = False
 
     #TODO: add in tiny no overhead db to store this stuff
     song = Song(song_id, song_artist, song_title, song_filename, song_length)
+    state = State(mpd_state, random, repeat_all)
     self.emit(self.song_signal, song)
     self.emit(self.state_signal, state)
 
