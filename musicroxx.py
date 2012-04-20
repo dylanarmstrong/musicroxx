@@ -33,20 +33,26 @@ SHOW_ARTIST = 1
 
 # Song object to avoid unnecessary threading
 class Song(object):
-  def __init__(self, song_id, artist, title, filename=""):
+  def __init__(self, song_id, artist, title, filename, song_length):
     self.song_id = song_id
     self.artist = artist
-    self.album = album
+    self.title = title
     self.filename = filename
+    self.song_length = song_length
 
   def get_song_label(self, flags):
-    if flags:
-      if flags == SHOW_FILENAME:
-        return '%s' % (self.filename)
-      elif flags == SHOW_ARTIST:
-        return '%s - %s' % (self.artist, self.title)
-      else:
-        return '%s' % (self.filename)
+    if flags == SHOW_FILENAME:
+      return '%s' % (self.filename)
+    elif flags == SHOW_ARTIST:
+      return '%s - %s' % (self.artist, self.title)
+    else:
+      return 'What are you trying to do - Developer'
+
+  def get_length(self):
+    return self.song_length.split(':')[1]
+
+  def get_position(self):
+    return self.song_length.split(':')[0]
 
 # Handles all calls to MPD
 class MPD(object):
@@ -117,8 +123,8 @@ class MainWindow(QtGui.QMainWindow):
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
     self.ui.playlist.setVisible(False)
-
-    self.songs = []
+    self.song_label_type = SHOW_FILENAME
+    self.current_song = None
 
     self.init_signals()
 
@@ -145,11 +151,12 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.ui.actionUpdateDB, \
         QtCore.SIGNAL("triggered()"), self.client.update_db)
     QtCore.QObject.connect(self.ui.actionViewCurrentSong,\
-        QtCore.SIGNAL("triggered()"), self.highlight_song)
+        QtCore.SIGNAL("triggered()"), self.highlight_current_song)
 
     # Playlist
     QtCore.QObject.connect(self.ui.playlist, \
-        QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.set_song)
+        QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), \
+        self.set_current_song)
 
     # Threads
     QtCore.QObject.connect(self.thread, self.thread.song_signal, \
@@ -159,17 +166,36 @@ class MainWindow(QtGui.QMainWindow):
 
     self.thread.start()
 
-  def view_playlist(self):
-    if self.ui.playlist.isVisible():
-      self.ui.playlist.setVisible(False)
-    else:
-      self.ui.playlist.setVisible(True)
+  def act_song(self, song):
+    # Song label
+    if self.current_song is None or song.song_id != self.current_song.song_id:
+      self.current_song = song
+      self.ui.songlb.setText(song.get_song_label(self.song_label_type))
 
-  def set_song(self, item):
-    self.client.seek(0, int(item.data(QtCore.Qt.UserRole).toInt()[0]))
+    # User readable song time
+    song_length = str(datetime.timedelta(seconds=int(song.get_length())))
+    current_pos = str(datetime.timedelta(seconds=int(song.get_position())))
+    self.ui.songprg_num.setText('%s / %s' % (current_pos, song_length))
+
+    # Seek bar
+    try:
+      song_seek_pos = float(song.get_position()) / \
+          float(song.get_length()) * 100
+    except ZeroDivisionError:
+      song_seek_pos = 0
+
+    # Block signals so that seek doesn't misinterpet user actions
+    self.ui.songprg.blockSignals(True)
+    self.ui.songprg.setValue(song_seek_pos)
+    self.ui.songprg.blockSignals(False)
+
+
+  #TODO: change state to more readable variation such as playing, paused, etc.
+  def act_state(self, state):
+    self.ui.statusbar.showMessage("Status: %s" % (state))
 
   #TODO: I'm sure this could be majorly cleaned up..
-  def bind_list(self, force=False):
+  def act_playlist(self, force=False):
     i = 0
     for track in self.client.playlist():
       filename = track.split(': ')
@@ -184,7 +210,14 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.playlist.addItem(item)
       i = i + 1
 
-  def highlight_song(self):
+  def view_playlist(self):
+    if self.ui.playlist.isVisible():
+      self.ui.playlist.setVisible(False)
+    else:
+      self.act_playlist()
+      self.ui.playlist.setVisible(True)
+
+  def highlight_current_song(self):
     i = 0
     for track in self.client.playlist():
       filename = track.split(': ')
@@ -194,38 +227,12 @@ class MainWindow(QtGui.QMainWindow):
         possible_item[0].setSelected(True)
       i = i + 1
 
-  def song_label(self, songnm):
-    self.ui.songlb.setText(songnm)
+  def set_current_song(self, item):
+    self.set_seek(0, int(item.data(QtCore.Qt.UserRole).toInt()[0]))
 
-  def song_seek(self, songseek):
-    songseek_lst = songseek.split(':')
-    song_length = int(songseek_lst[1])
-
-    # Exception for when mpd is stopped
-    try:
-      songseek_prg = float(songseek_lst[0]) / float(songseek_lst[1]) * 100
-    except ZeroDivisionError:
-      songseek_prg = 0
-
-    # Block signals so that seek doesn't misinterpet user actions
-    self.ui.songprg.blockSignals(True)
-    self.ui.songprg.setValue(songseek_prg)
-    self.ui.songprg.blockSignals(False)
-
-    # Set user readable song length
-    pos = str(datetime.timedelta(seconds=int(songseek_lst[0])))
-    length = str(datetime.timedelta(seconds=int(songseek_lst[1])))
-    self.ui.songprg_num.setText('%s / %s' % (pos, length))
-
-  def song_id(self, songid):
-    self.song_id = songid
-
-  def set_seek(self, songseek):
-    pos = (songseek * self.song_length / 100)
-    self.seek(pos)
-
-  def state(self, state):
-    self.ui.statusbar.showMessage("Status: %s" % (state))
+  def set_seek(self, song_seek, song_id=None):
+    self.client.seek((song_seek * int(self.current_song.get_length()) \
+        / 100), song_id if song_id else self.current_song.song_id)
 
 class retrieve_information(QtCore.QThread):
   scheduler = sched.scheduler(time.time, time.sleep)
@@ -234,6 +241,7 @@ class retrieve_information(QtCore.QThread):
     QtCore.QThread.__init__(self, parent)
 
     self.client = MPD()
+    self.songs = []
 
     self.song_signal = QtCore.SIGNAL("song_thread")
     self.state_signal = QtCore.SIGNAL("state_thread")
@@ -254,21 +262,22 @@ class retrieve_information(QtCore.QThread):
       song_filename = current_song['file']
 
     try:
-      song_seek = status['time']
+      song_length = status['time']
     except KeyError:
-      song_seek = "0:0"
+      song_length = "0:0"
 
     try:
       song_id = status['songid']
     except KeyError:
-      song_id = 0
+      song_id = -1
 
     try:
       state = status['state']
     except KeyError:
       state = 'error'
 
-    song = Song(song_id, song_artist, song_title, song_filename)
+    #TODO: add in tiny no overhead db to store this stuff
+    song = Song(song_id, song_artist, song_title, song_filename, song_length)
     self.emit(self.song_signal, song)
     self.emit(self.state_signal, state)
 
