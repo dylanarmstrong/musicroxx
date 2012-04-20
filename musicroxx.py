@@ -314,39 +314,40 @@ class retrieve_information(QtCore.QThread):
   def song_info(self):
     current_song = self.client.currentsong()
     status = self.client.status()
-    try:
-      song_artist = current_song['artist']
-      song_title = current_song['title']
-      song_filename = current_song['file']
-    except KeyError:
-      song_artist = "Unknown"
-      song_title = "Unknown"
-      song_filename = current_song['file']
+    if current_song != {}:
+      try:
+        song_artist = current_song['artist']
+        song_title = current_song['title']
+        song_filename = current_song['file']
+      except KeyError:
+        song_artist = "Unknown"
+        song_title = "Unknown"
+        song_filename = current_song['file']
 
-    try:
-      song_length = status['time']
-    except KeyError:
-      song_length = "0:0"
+      try:
+        song_length = status['time']
+      except KeyError:
+        song_length = "0:0"
 
-    try:
-      song_id = status['songid']
-    except KeyError:
-      song_id = -1
+      try:
+        song_id = status['songid']
+      except KeyError:
+        song_id = -1
 
-    try:
-      mpd_state = status['state']
-      repeat_all = int(status['repeat'])
-      random = int(status['random'])
-    except KeyError:
-      mpd_state = 'error'
-      repeat_all = False
-      random = False
+      try:
+        mpd_state = status['state']
+        repeat_all = int(status['repeat'])
+        random = int(status['random'])
+      except KeyError:
+        mpd_state = 'error'
+        repeat_all = False
+        random = False
 
-    #TODO: add in tiny no overhead db to store this stuff
-    song = Song(song_id, song_artist, song_title, song_filename, song_length)
-    state = State(mpd_state, random, repeat_all)
-    self.emit(self.song_signal, song)
-    self.emit(self.state_signal, state)
+      #TODO: add in tiny no overhead db to store this stuff
+      song = Song(song_id, song_artist, song_title, song_filename, song_length)
+      state = State(mpd_state, random, repeat_all)
+      self.emit(self.song_signal, song)
+      self.emit(self.state_signal, state)
 
   def timed_call(self, calls_per_second, callback, *args, **kw):
     period = 1.0 / calls_per_second
