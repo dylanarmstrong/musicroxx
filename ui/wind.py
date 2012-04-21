@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wind.ui'
 #
-# Created: Thu Apr 19 22:04:07 2012
+# Created: Sat Apr 21 14:16:05 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -107,10 +107,15 @@ class Ui_MainWindow(object):
         self.songlb.setFrameShadow(QtGui.QFrame.Sunken)
         self.songlb.setText(_fromUtf8(""))
         self.songlb.setObjectName(_fromUtf8("songlb"))
-        self.playlist = QtGui.QListWidget(self.centralwidget)
+        self.tabContainer = QtGui.QTabWidget(self.centralwidget)
+        self.tabContainer.setGeometry(QtCore.QRect(0, 100, 391, 241))
+        self.tabContainer.setObjectName(_fromUtf8("tabContainer"))
+        self.tabPlaylist = QtGui.QWidget()
+        self.tabPlaylist.setObjectName(_fromUtf8("tabPlaylist"))
+        self.playlist = QtGui.QListWidget(self.tabPlaylist)
         self.playlist.setEnabled(True)
-        self.playlist.setGeometry(QtCore.QRect(0, 100, 391, 231))
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
+        self.playlist.setGeometry(QtCore.QRect(0, 0, 387, 211))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.playlist.sizePolicy().hasHeightForWidth())
@@ -119,6 +124,23 @@ class Ui_MainWindow(object):
         self.playlist.setFrameShadow(QtGui.QFrame.Raised)
         self.playlist.setAlternatingRowColors(True)
         self.playlist.setObjectName(_fromUtf8("playlist"))
+        self.tabContainer.addTab(self.tabPlaylist, _fromUtf8(""))
+        self.tabLibrary = QtGui.QWidget()
+        self.tabLibrary.setObjectName(_fromUtf8("tabLibrary"))
+        self.library = QtGui.QTreeWidget(self.tabLibrary)
+        self.library.setEnabled(True)
+        self.library.setGeometry(QtCore.QRect(0, 0, 387, 211))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.library.sizePolicy().hasHeightForWidth())
+        self.library.setSizePolicy(sizePolicy)
+        self.library.setAcceptDrops(True)
+        self.library.setFrameShadow(QtGui.QFrame.Raised)
+        self.library.setAlternatingRowColors(True)
+        self.library.setHeaderHidden(True)
+        self.library.setObjectName(_fromUtf8("library"))
+        self.tabContainer.addTab(self.tabLibrary, _fromUtf8(""))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 577, 19))
@@ -179,6 +201,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuView.menuAction())
 
         self.retranslateUi(MainWindow)
+        self.tabContainer.setCurrentIndex(0)
         QtCore.QObject.connect(self.actionQuit, QtCore.SIGNAL(_fromUtf8("triggered()")), MainWindow.close)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         MainWindow.setTabOrder(self.songprg, self.previous)
@@ -189,6 +212,10 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "musicroxx", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabContainer.setTabText(self.tabContainer.indexOf(self.tabPlaylist), QtGui.QApplication.translate("MainWindow", "Playlist", None, QtGui.QApplication.UnicodeUTF8))
+        self.library.setSortingEnabled(True)
+        self.library.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Filename", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabContainer.setTabText(self.tabContainer.indexOf(self.tabLibrary), QtGui.QApplication.translate("MainWindow", "Library", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))

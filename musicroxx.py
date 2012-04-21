@@ -33,7 +33,8 @@ SHOW_ARTIST = 1
 
 # Song object to avoid unnecessary threading
 class Song(object):
-  def __init__(self, song_id, artist, title, filename, song_length):
+  def __init__(self, song_id=None, artist=None, title=None, \
+      filename=None, song_length=None):
     self.song_id = song_id
     self.artist = artist
     self.title = title
@@ -137,6 +138,16 @@ class MPD(object):
     self.connect()
     return self.client.status()
 
+  def listall(self):
+    self.connect()
+    return self.client.listall()
+
+# Library nodes for directories
+class Node(object):
+  def __init__(self):
+    self.dirs = {}
+    self.files = []
+
 class MainWindow(QtGui.QMainWindow):
 
   def __init__(self, parent=None):
@@ -146,7 +157,7 @@ class MainWindow(QtGui.QMainWindow):
 
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
-    self.ui.playlist.setVisible(False)
+    #self.ui.playlist.setVisible(False)
     self.song_label_type = SHOW_FILENAME
     self.current_song = None
     self.current_state = None
@@ -154,7 +165,8 @@ class MainWindow(QtGui.QMainWindow):
     self.init_signals()
 
   def init_signals(self):
-    self.thread = retrieve_information()
+    self.thread_song = retrieve_song_information()
+    self.thread_library = retrieve_library()
 
     # Buttons
     QtCore.QObject.connect(self.ui.play, \
@@ -172,7 +184,7 @@ class MainWindow(QtGui.QMainWindow):
 
     # Menu items
     QtCore.QObject.connect(self.ui.actionViewPlaylist, \
-        QtCore.SIGNAL("triggered()"), self.view_playlist)
+        QtCore.SIGNAL("triggered()"), self.act_playlist)
     QtCore.QObject.connect(self.ui.actionUpdateDB, \
         QtCore.SIGNAL("triggered()"), self.client.update_db)
     QtCore.QObject.connect(self.ui.actionViewCurrentSong, \
@@ -199,13 +211,18 @@ class MainWindow(QtGui.QMainWindow):
         QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), \
         self.set_current_song)
 
-    # Threads
-    QtCore.QObject.connect(self.thread, self.thread.song_signal, \
+    # Song threads
+    QtCore.QObject.connect(self.thread_song, self.thread_song.song_signal, \
         self.act_song)
-    QtCore.QObject.connect(self.thread, self.thread.state_signal, \
+    QtCore.QObject.connect(self.thread_song, self.thread_song.state_signal, \
         self.act_state)
 
-    self.thread.start()
+    # Library threads
+    QtCore.QObject.connect(self.thread_library, \
+        self.thread_library.library_signal, self.act_library)
+
+    self.thread_song.start()
+    self.thread_library.start()
 
   def toggle_repeat_all(self):
     self.client.toggle_repeat_all(self.current_state)
@@ -258,11 +275,52 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.statusbar.showMessage("Status: %s | Random: %s | Repeat All: %s" \
         % (state.mpd_state, random, repeat_all))
 
+  #TODO: This looks messsy
+  def act_library(self, songs):
+    old_directory = None
+    folder_name = ''
+
+    old_item = None
+    old_folder_name = ''
+    old_child = None
+    for song in songs:
+      # Split paths into directories
+      [sp for _,sp in sorted(
+        (len(splitpath), splitpath) for splitpath in
+        (path.split('/') for path in song.filename.split(': '))
+        )
+      ]
+
+      if sp[0] == folder_name:
+        item = old_item
+      else:
+        item = QtGui.QTreeWidgetItem([sp[0]])
+        old_item = item
+        folder_name = sp[0]
+
+      parent = item
+      for d in range(1,len(sp) - 1):
+        if sp[d] == old_folder_name:
+          child = old_child
+        else:
+          child = QtGui.QTreeWidgetItem([sp[d]])
+          parent.addChild(child)
+          old_child = child
+          old_folder_name = sp[d]
+
+        parent = child
+
+      for d in range(len(sp) - 1,len(sp)):
+        child = QtGui.QTreeWidgetItem([sp[d]])
+        parent.addChild(child)
+
+      self.ui.library.addTopLevelItem(item)
+
   #TODO: I'm sure this could be majorly cleaned up..
   def act_playlist(self, force=False):
     i = 0
-    for track in self.client.playlist():
-      filename = track.split(': ')
+    for song in self.client.playlist():
+      filename = song.split(': ')
       if force:
         self.ui.playlist.clear()
       possible_item = self.ui.playlist.findItems(filename[1], \
@@ -274,12 +332,12 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.playlist.addItem(item)
       i = i + 1
 
-  def view_playlist(self):
-    if self.ui.playlist.isVisible():
-      self.ui.playlist.setVisible(False)
-    else:
-      self.act_playlist()
-      self.ui.playlist.setVisible(True)
+  #def view_playlist(self):
+    #if self.ui.playlist.isVisible():
+    #  self.ui.playlist.setVisible(False)
+    #else:
+    #  self.act_playlist()
+    #  self.ui.playlist.setVisible(True)
 
   def highlight_current_song(self):
     i = 0
@@ -287,7 +345,7 @@ class MainWindow(QtGui.QMainWindow):
       filename = track.split(': ')
       possible_item = self.ui.playlist.findItems(filename[1], \
           QtCore.Qt.MatchExactly)
-      if possible_item and i == int(self.song_id):
+      if possible_item and i == int(self.current_song.song_id):
         possible_item[0].setSelected(True)
       i = i + 1
 
@@ -298,7 +356,46 @@ class MainWindow(QtGui.QMainWindow):
     self.client.seek((song_seek * int(self.current_song.get_length()) \
         / 100), song_id if song_id else self.current_song.song_id)
 
-class retrieve_information(QtCore.QThread):
+class retrieve_library(QtCore.QThread):
+  scheduler = sched.scheduler(time.time, time.sleep)
+
+  def __init__(self, parent=None):
+    QtCore.QThread.__init__(self, parent)
+
+    self.client = MPD()
+
+    self.library_signal = QtCore.SIGNAL("library_thread")
+
+    self.exiting = False
+
+  def library_info(self):
+    library = self.client.listall()
+
+    if library != {}:
+      songs = []
+      for song in library:
+        try:
+          song_filename = song['file']
+          song = Song(filename=song_filename)
+          songs.append(song)
+        except KeyError:
+          pass
+      self.emit(self.library_signal, songs)
+
+  def __del__(self):
+    self.exiting = True
+    self.wait()
+
+  def update(self):
+    pass
+
+  def run(self):
+    self.library_info()
+    #self.timed_call(1.0, self.library_info)
+    self.scheduler.run()
+
+
+class retrieve_song_information(QtCore.QThread):
   scheduler = sched.scheduler(time.time, time.sleep)
 
   def __init__(self, parent=None):
@@ -318,11 +415,11 @@ class retrieve_information(QtCore.QThread):
       try:
         song_artist = current_song['artist']
         song_title = current_song['title']
-        song_filename = current_song['file']
       except KeyError:
         song_artist = "Unknown"
         song_title = "Unknown"
-        song_filename = current_song['file']
+
+      song_filename = current_song['file']
 
       try:
         song_length = status['time']
