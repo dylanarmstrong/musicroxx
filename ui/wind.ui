@@ -257,7 +257,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QTabWidget" name="tabContainer">
+   <widget class="QTabWidget" name="songsTabContainer">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -292,13 +292,16 @@
        </sizepolicy>
       </property>
       <property name="acceptDrops">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
       <property name="alternatingRowColors">
        <bool>true</bool>
+      </property>
+      <property name="sortingEnabled">
+       <bool>false</bool>
       </property>
      </widget>
     </widget>
@@ -386,6 +389,9 @@
     <addaction name="separator"/>
     <addaction name="actionRepeatAll"/>
     <addaction name="actionRandom"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdd"/>
+    <addaction name="actionRemove"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -459,7 +465,7 @@
     <string>Play</string>
    </property>
    <property name="shortcut">
-    <string>Space</string>
+    <string>P</string>
    </property>
   </action>
   <action name="actionPause">
@@ -492,6 +498,22 @@
    </property>
    <property name="shortcut">
     <string>&lt;</string>
+   </property>
+  </action>
+  <action name="actionAdd">
+   <property name="text">
+    <string>Add</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionRemove">
+   <property name="text">
+    <string>Remove</string>
+   </property>
+   <property name="shortcut">
+    <string>Backspace</string>
    </property>
   </action>
  </widget>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wind.ui'
 #
-# Created: Sat Apr 21 14:16:05 2012
+# Created: Sat Apr 21 15:34:45 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -107,9 +107,9 @@ class Ui_MainWindow(object):
         self.songlb.setFrameShadow(QtGui.QFrame.Sunken)
         self.songlb.setText(_fromUtf8(""))
         self.songlb.setObjectName(_fromUtf8("songlb"))
-        self.tabContainer = QtGui.QTabWidget(self.centralwidget)
-        self.tabContainer.setGeometry(QtCore.QRect(0, 100, 391, 241))
-        self.tabContainer.setObjectName(_fromUtf8("tabContainer"))
+        self.songsTabContainer = QtGui.QTabWidget(self.centralwidget)
+        self.songsTabContainer.setGeometry(QtCore.QRect(0, 100, 391, 241))
+        self.songsTabContainer.setObjectName(_fromUtf8("songsTabContainer"))
         self.tabPlaylist = QtGui.QWidget()
         self.tabPlaylist.setObjectName(_fromUtf8("tabPlaylist"))
         self.playlist = QtGui.QListWidget(self.tabPlaylist)
@@ -120,11 +120,11 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.playlist.sizePolicy().hasHeightForWidth())
         self.playlist.setSizePolicy(sizePolicy)
-        self.playlist.setAcceptDrops(True)
+        self.playlist.setAcceptDrops(False)
         self.playlist.setFrameShadow(QtGui.QFrame.Raised)
         self.playlist.setAlternatingRowColors(True)
         self.playlist.setObjectName(_fromUtf8("playlist"))
-        self.tabContainer.addTab(self.tabPlaylist, _fromUtf8(""))
+        self.songsTabContainer.addTab(self.tabPlaylist, _fromUtf8(""))
         self.tabLibrary = QtGui.QWidget()
         self.tabLibrary.setObjectName(_fromUtf8("tabLibrary"))
         self.library = QtGui.QTreeWidget(self.tabLibrary)
@@ -140,7 +140,7 @@ class Ui_MainWindow(object):
         self.library.setAlternatingRowColors(True)
         self.library.setHeaderHidden(True)
         self.library.setObjectName(_fromUtf8("library"))
-        self.tabContainer.addTab(self.tabLibrary, _fromUtf8(""))
+        self.songsTabContainer.addTab(self.tabLibrary, _fromUtf8(""))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 577, 19))
@@ -181,6 +181,10 @@ class Ui_MainWindow(object):
         self.actionNext.setObjectName(_fromUtf8("actionNext"))
         self.actionPrevious = QtGui.QAction(MainWindow)
         self.actionPrevious.setObjectName(_fromUtf8("actionPrevious"))
+        self.actionAdd = QtGui.QAction(MainWindow)
+        self.actionAdd.setObjectName(_fromUtf8("actionAdd"))
+        self.actionRemove = QtGui.QAction(MainWindow)
+        self.actionRemove.setObjectName(_fromUtf8("actionRemove"))
         self.menuFile.addAction(self.actionUpdateDB)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
@@ -196,12 +200,15 @@ class Ui_MainWindow(object):
         self.menuEdit.addSeparator()
         self.menuEdit.addAction(self.actionRepeatAll)
         self.menuEdit.addAction(self.actionRandom)
+        self.menuEdit.addSeparator()
+        self.menuEdit.addAction(self.actionAdd)
+        self.menuEdit.addAction(self.actionRemove)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabContainer.setCurrentIndex(0)
+        self.songsTabContainer.setCurrentIndex(0)
         QtCore.QObject.connect(self.actionQuit, QtCore.SIGNAL(_fromUtf8("triggered()")), MainWindow.close)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         MainWindow.setTabOrder(self.songprg, self.previous)
@@ -212,10 +219,11 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "musicroxx", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabContainer.setTabText(self.tabContainer.indexOf(self.tabPlaylist), QtGui.QApplication.translate("MainWindow", "Playlist", None, QtGui.QApplication.UnicodeUTF8))
+        self.playlist.setSortingEnabled(False)
+        self.songsTabContainer.setTabText(self.songsTabContainer.indexOf(self.tabPlaylist), QtGui.QApplication.translate("MainWindow", "Playlist", None, QtGui.QApplication.UnicodeUTF8))
         self.library.setSortingEnabled(True)
         self.library.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Filename", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabContainer.setTabText(self.tabContainer.indexOf(self.tabLibrary), QtGui.QApplication.translate("MainWindow", "Library", None, QtGui.QApplication.UnicodeUTF8))
+        self.songsTabContainer.setTabText(self.songsTabContainer.indexOf(self.tabLibrary), QtGui.QApplication.translate("MainWindow", "Library", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
@@ -234,7 +242,7 @@ class Ui_MainWindow(object):
         self.actionRandom.setText(QtGui.QApplication.translate("MainWindow", "Random", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRandom.setShortcut(QtGui.QApplication.translate("MainWindow", "Z", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlay.setText(QtGui.QApplication.translate("MainWindow", "Play", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionPlay.setShortcut(QtGui.QApplication.translate("MainWindow", "Space", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlay.setShortcut(QtGui.QApplication.translate("MainWindow", "P", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPause.setText(QtGui.QApplication.translate("MainWindow", "Pause", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPause.setShortcut(QtGui.QApplication.translate("MainWindow", "Shift+P", None, QtGui.QApplication.UnicodeUTF8))
         self.actionStop.setText(QtGui.QApplication.translate("MainWindow", "Stop", None, QtGui.QApplication.UnicodeUTF8))
@@ -243,4 +251,8 @@ class Ui_MainWindow(object):
         self.actionNext.setShortcut(QtGui.QApplication.translate("MainWindow", ">", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrevious.setText(QtGui.QApplication.translate("MainWindow", "Previous", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrevious.setShortcut(QtGui.QApplication.translate("MainWindow", "<", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAdd.setText(QtGui.QApplication.translate("MainWindow", "Add", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAdd.setShortcut(QtGui.QApplication.translate("MainWindow", "Space", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRemove.setText(QtGui.QApplication.translate("MainWindow", "Remove", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRemove.setShortcut(QtGui.QApplication.translate("MainWindow", "Backspace", None, QtGui.QApplication.UnicodeUTF8))
 

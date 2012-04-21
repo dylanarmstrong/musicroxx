@@ -161,7 +161,6 @@ class MainWindow(QtGui.QMainWindow):
 
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
-    #self.ui.playlist.setVisible(False)
     self.song_label_type = SHOW_FILENAME
     self.current_song = None
     self.current_state = None
@@ -190,7 +189,7 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.ui.actionViewPlaylist, \
         QtCore.SIGNAL("triggered()"), self.act_playlist)
     QtCore.QObject.connect(self.ui.actionUpdateDB, \
-        QtCore.SIGNAL("triggered()"), self.client.update_db)
+        QtCore.SIGNAL("triggered()"), self.update_db)
     QtCore.QObject.connect(self.ui.actionViewCurrentSong, \
         QtCore.SIGNAL("triggered()"), self.highlight_current_song)
     QtCore.QObject.connect(self.ui.actionRepeatAll, \
@@ -214,6 +213,10 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.ui.playlist, \
         QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), \
         self.set_current_song)
+    self.ui.playlist.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+    self.connect(self.ui.playlist, \
+        QtCore.SIGNAL('customContextMenuRequested(QPoint)'), \
+        self.playlist_context_menu)
 
     # Library
     QtCore.QObject.connect(self.ui.library, \
@@ -233,6 +236,12 @@ class MainWindow(QtGui.QMainWindow):
     self.thread_song.start()
     self.thread_library.start()
 
+    self.act_playlist()
+
+  def update_db(self):
+    self.client.update_db()
+    self.thread_library.update()
+
   def add_playlist_song(self, item, column):
     p = item.parent()
     filename_lst = []
@@ -244,6 +253,7 @@ class MainWindow(QtGui.QMainWindow):
     filename_lst.append(str(item.text(column)))
     filename = '/'.join(filename_lst)
     self.client.add(filename)
+    self.act_playlist()
 
   def toggle_repeat_all(self):
     self.client.toggle_repeat_all(self.current_state)
@@ -293,8 +303,11 @@ class MainWindow(QtGui.QMainWindow):
       random = "Off"
       self.ui.actionRandom.setChecked(False)
 
-    self.ui.statusbar.showMessage("Status: %s | Random: %s | Repeat All: %s" \
-        % (state.mpd_state, random, repeat_all))
+    #TODO: Status bar text is randomly disappearing on menu actions.. why?
+    status = 'Status: %s | Random: %s | Repeat All: %s' % (state.mpd_state, \
+        random, repeat_all)
+
+    self.ui.statusbar.showMessage(status)
 
   #TODO: This looks messsy
   def act_library(self, songs):
@@ -353,6 +366,13 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.playlist.addItem(item)
       i = i + 1
 
+  def playlist_context_menu(self, point):
+    menu = QtGui.QMenu(self)
+    menu.addAction("Play")
+    menu.addAction("Remove")
+    menu.popup(self.ui.playlist.mapToGlobal(point))
+
+  #TODO: Switch tabs instead of hiding/showing the playlist & same with lib
   #def view_playlist(self):
     #if self.ui.playlist.isVisible():
     #  self.ui.playlist.setVisible(False)
@@ -379,6 +399,7 @@ class MainWindow(QtGui.QMainWindow):
         / 100), song_id if song_id else self.current_song.song_id)
     else:
       self.client.seek(0, song_id)
+
 class retrieve_library(QtCore.QThread):
   scheduler = sched.scheduler(time.time, time.sleep)
 
@@ -450,7 +471,7 @@ class retrieve_song_information(QtCore.QThread):
         song_length = "0:0"
 
       try:
-        song_id = status['songid']
+        song_id = current_song['pos']
       except KeyError:
         song_id = -1
 
