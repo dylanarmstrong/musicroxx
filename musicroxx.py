@@ -142,6 +142,10 @@ class MPD(object):
     self.connect()
     return self.client.listall()
 
+  def add(self, filename):
+    self.connect()
+    self.client.add(filename)
+
 # Library nodes for directories
 class Node(object):
   def __init__(self):
@@ -211,6 +215,11 @@ class MainWindow(QtGui.QMainWindow):
         QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), \
         self.set_current_song)
 
+    # Library
+    QtCore.QObject.connect(self.ui.library, \
+        QtCore.SIGNAL("itemActivated(QTreeWidgetItem*, int)"), \
+        self.add_playlist_song)
+
     # Song threads
     QtCore.QObject.connect(self.thread_song, self.thread_song.song_signal, \
         self.act_song)
@@ -223,6 +232,18 @@ class MainWindow(QtGui.QMainWindow):
 
     self.thread_song.start()
     self.thread_library.start()
+
+  def add_playlist_song(self, item, column):
+    p = item.parent()
+    filename_lst = []
+    filename_real_lst = []
+    while p != None:
+        filename_lst.append(str(p.text(column)))
+        p = p.parent()
+    filename_lst.reverse()
+    filename_lst.append(str(item.text(column)))
+    filename = '/'.join(filename_lst)
+    self.client.add(filename)
 
   def toggle_repeat_all(self):
     self.client.toggle_repeat_all(self.current_state)
@@ -353,9 +374,11 @@ class MainWindow(QtGui.QMainWindow):
     self.set_seek(0, int(item.data(QtCore.Qt.UserRole).toInt()[0]))
 
   def set_seek(self, song_seek, song_id=None):
-    self.client.seek((song_seek * int(self.current_song.get_length()) \
+    if self.current_song:
+      self.client.seek((song_seek * int(self.current_song.get_length()) \
         / 100), song_id if song_id else self.current_song.song_id)
-
+    else:
+      self.client.seek(0, song_id)
 class retrieve_library(QtCore.QThread):
   scheduler = sched.scheduler(time.time, time.sleep)
 
