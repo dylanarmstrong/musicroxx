@@ -4,9 +4,6 @@ port = 6600
 # display = filename|artist
 display = artist
 
-# mpd-myfm is a never ending playlist, support not currently implemented
-mpd-myfm = off
-
 # keybindings
 play = p
 pause = Shift+p
