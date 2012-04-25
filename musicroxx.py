@@ -169,7 +169,8 @@ class MainWindow(QtGui.QMainWindow):
 
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
-    self.song_label_type = SHOW_FILENAME
+    self.set_keybindings()
+
     self.current_song = None
     self.current_state = None
 
@@ -177,6 +178,46 @@ class MainWindow(QtGui.QMainWindow):
     self.thread_library = retrieve_library(host, port)
 
     self.init_signals()
+
+  def set_keybindings(self):
+    keys = {}
+    keys[0] = self.config.get_config_for('play')
+    keys[1] = self.config.get_config_for('pause')
+    keys[2] = self.config.get_config_for('stop')
+    keys[3] = self.config.get_config_for('next')
+    keys[4] = self.config.get_config_for('prev')
+    keys[5] = self.config.get_config_for('repeat')
+    keys[6] = self.config.get_config_for('random')
+    keys[7] = self.config.get_config_for('add')
+    keys[8] = self.config.get_config_for('remove')
+    keys[9] = self.config.get_config_for('update_db')
+    keys[10] = self.config.get_config_for('current_song')
+    keys[11] = self.config.get_config_for('view_playlist')
+    keys[12] = self.config.get_config_for('view_library')
+    keys[13] = self.config.get_config_for('quit')
+
+    actions = {}
+    actions[0] = self.ui.actionPlay
+    actions[1] = self.ui.actionPause
+    actions[2] = self.ui.actionStop
+    actions[3] = self.ui.actionNext
+    actions[4] = self.ui.actionPrevious
+    actions[5] = self.ui.actionRepeatAll
+    actions[6] = self.ui.actionRandom
+    actions[7] = self.ui.actionAdd
+    actions[8] = self.ui.actionRemove
+    actions[9] = self.ui.actionUpdateDB
+    actions[10] = self.ui.actionViewCurrentSong
+    actions[11] = self.ui.actionViewPlaylist
+    actions[12] = self.ui.actionViewLibrary
+    actions[13] = self.ui.actionQuit
+
+    for k in keys:
+      self.set_shortcut(actions[k], keys[k])
+
+  def set_shortcut(self, action, keyseq):
+    if keyseq:
+      action.setShortcut(QtGui.QKeySequence(keyseq))
 
   def init_signals(self):
     # Buttons

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wind.ui'
 #
-# Created: Sat Apr 21 15:34:45 2012
+# Created: Wed Apr 25 11:11:25 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -161,8 +161,8 @@ class Ui_MainWindow(object):
         self.actionQuit.setObjectName(_fromUtf8("actionQuit"))
         self.actionViewPlaylist = QtGui.QAction(MainWindow)
         self.actionViewPlaylist.setObjectName(_fromUtf8("actionViewPlaylist"))
-        self.actionLibrary = QtGui.QAction(MainWindow)
-        self.actionLibrary.setObjectName(_fromUtf8("actionLibrary"))
+        self.actionViewLibrary = QtGui.QAction(MainWindow)
+        self.actionViewLibrary.setObjectName(_fromUtf8("actionViewLibrary"))
         self.actionViewCurrentSong = QtGui.QAction(MainWindow)
         self.actionViewCurrentSong.setObjectName(_fromUtf8("actionViewCurrentSong"))
         self.actionRepeatAll = QtGui.QAction(MainWindow)
@@ -189,7 +189,7 @@ class Ui_MainWindow(object):
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
         self.menuView.addAction(self.actionViewPlaylist)
-        self.menuView.addAction(self.actionLibrary)
+        self.menuView.addAction(self.actionViewLibrary)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionViewCurrentSong)
         self.menuEdit.addAction(self.actionPlay)
@@ -233,8 +233,8 @@ class Ui_MainWindow(object):
         self.actionQuit.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Q", None, QtGui.QApplication.UnicodeUTF8))
         self.actionViewPlaylist.setText(QtGui.QApplication.translate("MainWindow", "Playlist", None, QtGui.QApplication.UnicodeUTF8))
         self.actionViewPlaylist.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+P", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionLibrary.setText(QtGui.QApplication.translate("MainWindow", "Library", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionLibrary.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+L", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionViewLibrary.setText(QtGui.QApplication.translate("MainWindow", "Library", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionViewLibrary.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+L", None, QtGui.QApplication.UnicodeUTF8))
         self.actionViewCurrentSong.setText(QtGui.QApplication.translate("MainWindow", "Current Song", None, QtGui.QApplication.UnicodeUTF8))
         self.actionViewCurrentSong.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Shift+U", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRepeatAll.setText(QtGui.QApplication.translate("MainWindow", "Repeat", None, QtGui.QApplication.UnicodeUTF8))

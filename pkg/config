@@ -6,3 +6,19 @@ display = artist
 
 # mpd-myfm is a never ending playlist, support not currently implemented
 mpd-myfm = off
+
+# keybindings
+play = p
+pause = Shift+P
+stop = s
+next = >
+prev = <
+repeat = r
+random = z
+add = Space
+remove = Backspace
+update_db = u
+current_song = Ctrl+Shift+u
+view_playlist = Ctrl+p
+view_library = Ctrl+l
+quit = Ctrl+q
