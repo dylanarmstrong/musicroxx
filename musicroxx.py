@@ -25,7 +25,6 @@ THE SOFTWARE.
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from ui.wind import Ui_MainWindow
-import myfm
 import mpd, os, sys, time, sched, datetime, socket, signal
 
 # Global flags
