@@ -360,8 +360,16 @@ class MainWindow(QtGui.QMainWindow):
       random = "Off"
       self.ui.actionRandom.setChecked(False)
 
+    mpd_state = state.mpd_state
+    if mpd_state == 'play':
+      mpd_state = 'Playing'
+    elif mpd_state == 'pause':
+      mpd_state = 'Paused'
+    elif mpd_state == 'stop':
+      mpd_state = 'Stopped'
+
     #TODO: Status bar text is randomly disappearing on menu actions.. why?
-    status = 'Status: %s | Random: %s | Repeat All: %s' % (state.mpd_state, \
+    status = 'Status: %s | Random: %s | Repeat All: %s' % (mpd_state, \
         random, repeat_all)
 
     self.ui.statusbar.showMessage(status)
