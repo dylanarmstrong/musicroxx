@@ -542,8 +542,8 @@ class Config(object):
       pass
     configfile = os.path.join(configpath, 'config')
     if not os.path.isfile(configfile):
-      import shutil
-      shutil.copyfile('./pkg/config', configfile)
+      from shutil import copyfile
+      copyfile('./pkg/config', configfile)
 
   def parse_config(self, configpath):
     options = {}
