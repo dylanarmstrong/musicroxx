@@ -45,7 +45,10 @@ class Song(object):
     if flags == SHOW_FILENAME:
       return '%s' % (self.filename)
     elif flags == SHOW_ARTIST:
-      return '%s - %s' % (self.artist, self.title)
+      if self.artist and self.title:
+        return '%s - %s' % (self.artist, self.title)
+      else:
+        return '%s' % (self.filename)
     else:
       return 'What are you trying to do - Developer'
 
@@ -157,7 +160,7 @@ class MainWindow(QtGui.QMainWindow):
   def __init__(self, config, parent=None):
     QtGui.QWidget.__init__(self, parent)
     self.client = MPD()
-
+    self.config = config
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
     self.song_label_type = SHOW_FILENAME
@@ -264,7 +267,15 @@ class MainWindow(QtGui.QMainWindow):
     # Song label
     if self.current_song is None or song.song_id != self.current_song.song_id:
       self.current_song = song
-      self.ui.songlb.setText(song.get_song_label(self.song_label_type))
+      song_display_config = self.config.get_config_for('display')
+      if song_display_config:
+        if song_display_config == 'artist':
+          song_display = SHOW_ARTIST
+        else:
+          song_display = SHOW_FILENAME
+      else:
+        song_display = SHOW_FILENAME
+      self.ui.songlb.setText(self.current_song.get_song_label(song_display))
 
     # User readable song time
     song_length = str(datetime.timedelta(seconds=int(song.get_length())))
@@ -459,8 +470,8 @@ class retrieve_song_information(QtCore.QThread):
         song_artist = current_song['artist']
         song_title = current_song['title']
       except KeyError:
-        song_artist = "Unknown"
-        song_title = "Unknown"
+        song_artist = None
+        song_title = None
 
       song_filename = current_song['file']
 
@@ -506,7 +517,9 @@ class retrieve_song_information(QtCore.QThread):
 
 class Config(object):
   def __init__(self):
-    self.config = self.parse_config(self._config_dir())
+    configpath = self._config_dir()
+    self.make_config(configpath)
+    self.config = self.parse_config(configpath)
 
   def get_config_for(self, name):
     try:
@@ -521,6 +534,16 @@ class Config(object):
     else:
       confighome = os.path.join(os.environ['HOME'], '.config')
     return os.path.join(confighome, 'musicroxx')
+
+  def make_config(self, configpath):
+    try:
+      os.makedirs(configpath)
+    except OSError:
+      pass
+    configfile = os.path.join(configpath, 'config')
+    if not os.path.isfile(configfile):
+      import shutil
+      shutil.copyfile('./pkg/config', configfile)
 
   def parse_config(self, configpath):
     options = {}

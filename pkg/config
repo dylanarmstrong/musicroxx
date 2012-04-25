@@ -1,0 +1,5 @@
+# mpd-myfm is a never ending playlist
+mpd-myfm = off
+
+# display = filename|artist
+display = artist
