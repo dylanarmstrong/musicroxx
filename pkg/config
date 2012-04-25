@@ -1,4 +1,4 @@
-# mpd-myfm is a never ending playlist
+# mpd-myfm is a never ending playlist, support not currently implemented
 mpd-myfm = off
 
 # display = filename|artist
