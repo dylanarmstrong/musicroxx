@@ -237,6 +237,8 @@ class MainWindow(QtGui.QMainWindow):
     # Menu items
     QtCore.QObject.connect(self.ui.actionViewPlaylist, \
         QtCore.SIGNAL("triggered()"), self.act_playlist)
+    QtCore.QObject.connect(self.ui.actionViewLibrary, \
+        QtCore.SIGNAL("triggered()"), self.view_library)
     QtCore.QObject.connect(self.ui.actionUpdateDB, \
         QtCore.SIGNAL("triggered()"), self.update_db)
     QtCore.QObject.connect(self.ui.actionViewCurrentSong, \
@@ -309,6 +311,12 @@ class MainWindow(QtGui.QMainWindow):
 
   def toggle_random(self):
     self.client.toggle_random(self.current_state)
+
+  def view_playlist(self):
+    self.ui.songsTabContainer.setCurrentWidget(self.ui.tabPlaylist)
+
+  def view_library(self):
+    self.ui.songsTabContainer.setCurrentWidget(self.ui.tabLibrary)
 
   def act_song(self, song):
     # Song label
@@ -417,6 +425,7 @@ class MainWindow(QtGui.QMainWindow):
 
   #TODO: I'm sure this could be majorly cleaned up..
   def act_playlist(self, force=False):
+    self.view_playlist()
     i = 0
     for song in self.client.playlist():
       filename = song.split(': ')
@@ -436,14 +445,6 @@ class MainWindow(QtGui.QMainWindow):
     menu.addAction("Play")
     menu.addAction("Remove")
     menu.popup(self.ui.playlist.mapToGlobal(point))
-
-  #TODO: Switch tabs instead of hiding/showing the playlist & same with lib
-  #def view_playlist(self):
-    #if self.ui.playlist.isVisible():
-    #  self.ui.playlist.setVisible(False)
-    #else:
-    #  self.act_playlist()
-    #  self.ui.playlist.setVisible(True)
 
   def highlight_current_song(self):
     i = 0

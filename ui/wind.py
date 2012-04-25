@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wind.ui'
 #
-# Created: Wed Apr 25 11:31:44 2012
+# Created: Wed Apr 25 12:39:41 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -109,6 +109,8 @@ class Ui_MainWindow(object):
         self.songlb.setObjectName(_fromUtf8("songlb"))
         self.songsTabContainer = QtGui.QTabWidget(self.centralwidget)
         self.songsTabContainer.setGeometry(QtCore.QRect(0, 100, 391, 241))
+        self.songsTabContainer.setTabShape(QtGui.QTabWidget.Rounded)
+        self.songsTabContainer.setMovable(True)
         self.songsTabContainer.setObjectName(_fromUtf8("songsTabContainer"))
         self.tabPlaylist = QtGui.QWidget()
         self.tabPlaylist.setObjectName(_fromUtf8("tabPlaylist"))
