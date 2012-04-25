@@ -9,7 +9,7 @@ mpd-myfm = off
 
 # keybindings
 play = p
-pause = Shift+P
+pause = Shift+p
 stop = s
 next = >
 prev = <
