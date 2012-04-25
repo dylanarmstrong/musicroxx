@@ -1,5 +1,8 @@
-# mpd-myfm is a never ending playlist, support not currently implemented
-mpd-myfm = off
+host = localhost
+port = 6600
 
 # display = filename|artist
 display = artist
+
+# mpd-myfm is a never ending playlist, support not currently implemented
+mpd-myfm = off

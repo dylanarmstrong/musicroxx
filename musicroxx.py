@@ -66,12 +66,14 @@ class State(object):
 
 # Handles all calls to MPD
 class MPD(object):
-  def __init__(self):
+  def __init__(self, host, port):
     self.client = mpd.MPDClient()
+    self.host = host
+    self.port = port
 
   def connect(self, i=0):
     try:
-      self.client.connect("localhost", 6600)
+      self.client.connect(self.host, self.port)
     except mpd.ConnectionError, e:
       self.client.disconnect()
       if i < 5:
@@ -159,20 +161,24 @@ class MainWindow(QtGui.QMainWindow):
 
   def __init__(self, config, parent=None):
     QtGui.QWidget.__init__(self, parent)
-    self.client = MPD()
+
     self.config = config
+    host = self.config.get_config_for('host')
+    port = self.config.get_config_for('port')
+    self.client = MPD(host, port)
+
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
     self.song_label_type = SHOW_FILENAME
     self.current_song = None
     self.current_state = None
 
+    self.thread_song = retrieve_song_information(host, port)
+    self.thread_library = retrieve_library(host, port)
+
     self.init_signals()
 
   def init_signals(self):
-    self.thread_song = retrieve_song_information()
-    self.thread_library = retrieve_library()
-
     # Buttons
     QtCore.QObject.connect(self.ui.play, \
         QtCore.SIGNAL("clicked()"), self.client.play)
@@ -413,10 +419,10 @@ class MainWindow(QtGui.QMainWindow):
 class retrieve_library(QtCore.QThread):
   scheduler = sched.scheduler(time.time, time.sleep)
 
-  def __init__(self, parent=None):
+  def __init__(self, host, port, parent=None):
     QtCore.QThread.__init__(self, parent)
 
-    self.client = MPD()
+    self.client = MPD(host, port)
 
     self.library_signal = QtCore.SIGNAL("library_thread")
 
@@ -452,10 +458,10 @@ class retrieve_library(QtCore.QThread):
 class retrieve_song_information(QtCore.QThread):
   scheduler = sched.scheduler(time.time, time.sleep)
 
-  def __init__(self, parent=None):
+  def __init__(self, host, port, parent=None):
     QtCore.QThread.__init__(self, parent)
 
-    self.client = MPD()
+    self.client = MPD(host, port)
 
     self.song_signal = QtCore.SIGNAL("song_thread")
     self.state_signal = QtCore.SIGNAL("state_thread")
