@@ -154,9 +154,8 @@ class Node(object):
 
 class MainWindow(QtGui.QMainWindow):
 
-  def __init__(self, parent=None):
+  def __init__(self, config, parent=None):
     QtGui.QWidget.__init__(self, parent)
-
     self.client = MPD()
 
     self.ui = Ui_MainWindow()
@@ -505,9 +504,46 @@ class retrieve_song_information(QtCore.QThread):
     self.timed_call(1.0, self.song_info)
     self.scheduler.run()
 
+class Config(object):
+  def __init__(self):
+    self.config = self.parse_config(self._config_dir())
+
+  def get_config_for(self, name):
+    try:
+      option = self.config[name]
+    except KeyError, e:
+      option = None
+    return option
+
+  def _config_dir(self):
+    if 'XDG_CONFIG_HOME' in os.environ:
+      confighome = os.environ['XDG_CONFIG_HOME']
+    else:
+      confighome = os.path.join(os.environ['HOME'], '.config')
+    return os.path.join(confighome, 'musicroxx')
+
+  def parse_config(self, configpath):
+    options = {}
+    try:
+      f = open(os.path.join(configpath, 'config'))
+    except IOError:
+      print 'File does not exist'
+    config = {}
+    for line in f:
+      line = ''.join(e for e in line if not e.isspace())
+      if not line.startswith('#'):
+        key = line.split('=')
+        try:
+          config[key[0]] = key[1]
+        except IndexError:
+          pass
+    f.close()
+    return config
+
 def main(args):
+  config = Config()
   app = QtGui.QApplication(sys.argv)
-  window = MainWindow()
+  window = MainWindow(config=config)
   window.show()
   window.raise_()
   sys.exit(app.exec_())
