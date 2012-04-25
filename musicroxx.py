@@ -454,6 +454,7 @@ class MainWindow(QtGui.QMainWindow):
           QtCore.Qt.MatchExactly)
       if possible_item and i == int(self.current_song.song_id):
         possible_item[0].setSelected(True)
+        self.ui.playlist.scrollToItem(possible_item[0])
       i = i + 1
 
   def set_current_song(self, item):
