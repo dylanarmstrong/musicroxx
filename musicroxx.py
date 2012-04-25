@@ -25,7 +25,7 @@ THE SOFTWARE.
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from ui.wind import Ui_MainWindow
-import mpd, os, sys, time, sched, datetime, socket
+import mpd, os, sys, time, sched, datetime, socket, signal
 
 # Global flags
 SHOW_FILENAME = 0
@@ -619,4 +619,5 @@ def main(args):
   sys.exit(app.exec_())
 
 if __name__ == "__main__":
+  signal.signal(signal.SIGINT, signal.SIG_DFL)
   main(sys.argv)

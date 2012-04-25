@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wind.ui'
 #
-# Created: Wed Apr 25 11:11:25 2012
+# Created: Wed Apr 25 11:31:44 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(577, 392)
+        MainWindow.resize(390, 380)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -143,7 +143,7 @@ class Ui_MainWindow(object):
         self.songsTabContainer.addTab(self.tabLibrary, _fromUtf8(""))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 577, 19))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 390, 19))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
