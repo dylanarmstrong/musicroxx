@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wind.ui'
 #
-# Created: Wed Apr 25 13:46:22 2012
+# Created: Thu Apr 26 11:29:35 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -80,6 +80,20 @@ class Ui_MainWindow(object):
         self.library.setObjectName(_fromUtf8("library"))
         self.gridLayout_3.addWidget(self.library, 0, 0, 1, 1)
         self.songsTabContainer.addTab(self.tabLibrary, _fromUtf8(""))
+        self.tabSearch = QtGui.QWidget()
+        self.tabSearch.setObjectName(_fromUtf8("tabSearch"))
+        self.gridLayout_6 = QtGui.QGridLayout(self.tabSearch)
+        self.gridLayout_6.setMargin(0)
+        self.gridLayout_6.setObjectName(_fromUtf8("gridLayout_6"))
+        self.search = QtGui.QListWidget(self.tabSearch)
+        self.search.setFrameShadow(QtGui.QFrame.Raised)
+        self.search.setAlternatingRowColors(True)
+        self.search.setObjectName(_fromUtf8("search"))
+        self.gridLayout_6.addWidget(self.search, 1, 0, 1, 1)
+        self.searchEdit = QtGui.QLineEdit(self.tabSearch)
+        self.searchEdit.setObjectName(_fromUtf8("searchEdit"))
+        self.gridLayout_6.addWidget(self.searchEdit, 0, 0, 1, 1)
+        self.songsTabContainer.addTab(self.tabSearch, _fromUtf8(""))
         self.gridLayout.addWidget(self.songsTabContainer, 2, 0, 1, 1)
         self.frame = QtGui.QFrame(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -203,11 +217,14 @@ class Ui_MainWindow(object):
         self.actionAdd.setObjectName(_fromUtf8("actionAdd"))
         self.actionRemove = QtGui.QAction(MainWindow)
         self.actionRemove.setObjectName(_fromUtf8("actionRemove"))
+        self.actionViewSearch = QtGui.QAction(MainWindow)
+        self.actionViewSearch.setObjectName(_fromUtf8("actionViewSearch"))
         self.menuFile.addAction(self.actionUpdateDB)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
         self.menuView.addAction(self.actionViewPlaylist)
         self.menuView.addAction(self.actionViewLibrary)
+        self.menuView.addAction(self.actionViewSearch)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionViewCurrentSong)
         self.menuEdit.addAction(self.actionPlay)
@@ -242,6 +259,8 @@ class Ui_MainWindow(object):
         self.library.setSortingEnabled(True)
         self.library.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Filename", None, QtGui.QApplication.UnicodeUTF8))
         self.songsTabContainer.setTabText(self.songsTabContainer.indexOf(self.tabLibrary), QtGui.QApplication.translate("MainWindow", "Library", None, QtGui.QApplication.UnicodeUTF8))
+        self.searchEdit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "Search", None, QtGui.QApplication.UnicodeUTF8))
+        self.songsTabContainer.setTabText(self.songsTabContainer.indexOf(self.tabSearch), QtGui.QApplication.translate("MainWindow", "Search", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
@@ -273,4 +292,6 @@ class Ui_MainWindow(object):
         self.actionAdd.setShortcut(QtGui.QApplication.translate("MainWindow", "Space", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRemove.setText(QtGui.QApplication.translate("MainWindow", "Remove", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRemove.setShortcut(QtGui.QApplication.translate("MainWindow", "Backspace", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionViewSearch.setText(QtGui.QApplication.translate("MainWindow", "Search", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionViewSearch.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
 

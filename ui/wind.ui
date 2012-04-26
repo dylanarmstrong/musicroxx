@@ -94,9 +94,6 @@
          </widget>
         </item>
        </layout>
-       <zorder>frame</zorder>
-       <zorder>frame</zorder>
-       <zorder>playlist</zorder>
       </widget>
       <widget class="QWidget" name="tabLibrary">
        <attribute name="title">
@@ -143,6 +140,33 @@
             <string>Filename</string>
            </property>
           </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabSearch">
+       <attribute name="title">
+        <string>Search</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <item row="1" column="0">
+         <widget class="QListWidget" name="search">
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLineEdit" name="searchEdit">
+          <property name="placeholderText">
+           <string>Search</string>
+          </property>
          </widget>
         </item>
        </layout>
@@ -395,6 +419,7 @@
     </property>
     <addaction name="actionViewPlaylist"/>
     <addaction name="actionViewLibrary"/>
+    <addaction name="actionViewSearch"/>
     <addaction name="separator"/>
     <addaction name="actionViewCurrentSong"/>
    </widget>
@@ -535,6 +560,14 @@
    </property>
    <property name="shortcut">
     <string>Backspace</string>
+   </property>
+  </action>
+  <action name="actionViewSearch">
+   <property name="text">
+    <string>Search</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>
