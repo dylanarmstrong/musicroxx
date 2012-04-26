@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wind.ui'
 #
-# Created: Thu Apr 26 11:29:35 2012
+# Created: Thu Apr 26 11:37:20 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -219,6 +219,8 @@ class Ui_MainWindow(object):
         self.actionRemove.setObjectName(_fromUtf8("actionRemove"))
         self.actionViewSearch = QtGui.QAction(MainWindow)
         self.actionViewSearch.setObjectName(_fromUtf8("actionViewSearch"))
+        self.actionClear = QtGui.QAction(MainWindow)
+        self.actionClear.setObjectName(_fromUtf8("actionClear"))
         self.menuFile.addAction(self.actionUpdateDB)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
@@ -238,6 +240,7 @@ class Ui_MainWindow(object):
         self.menuEdit.addSeparator()
         self.menuEdit.addAction(self.actionAdd)
         self.menuEdit.addAction(self.actionRemove)
+        self.menuEdit.addAction(self.actionClear)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
@@ -294,4 +297,6 @@ class Ui_MainWindow(object):
         self.actionRemove.setShortcut(QtGui.QApplication.translate("MainWindow", "Backspace", None, QtGui.QApplication.UnicodeUTF8))
         self.actionViewSearch.setText(QtGui.QApplication.translate("MainWindow", "Search", None, QtGui.QApplication.UnicodeUTF8))
         self.actionViewSearch.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionClear.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionClear.setShortcut(QtGui.QApplication.translate("MainWindow", "C", None, QtGui.QApplication.UnicodeUTF8))
 

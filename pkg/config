@@ -24,3 +24,4 @@ view_playlist = Ctrl+p
 view_library = Ctrl+l
 quit = Ctrl+q
 view_search = Ctrl+s
+clear = c

@@ -438,6 +438,7 @@
     <addaction name="separator"/>
     <addaction name="actionAdd"/>
     <addaction name="actionRemove"/>
+    <addaction name="actionClear"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -568,6 +569,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+   <property name="shortcut">
+    <string>C</string>
    </property>
   </action>
  </widget>
