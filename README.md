@@ -25,6 +25,7 @@ Here's a couple quick screenshots of musicroxx in action:
 ![screenshot.png](https://github.com/meinhimmel/musicroxx/raw/master/screenshot.png "Screenshot")
 
 musicroxx; an opensource mpd client
+
 Copyright (C) 2012  Dylan Armstrong
 
 This program is free software: you can redistribute it and/or modify
