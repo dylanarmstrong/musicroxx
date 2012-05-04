@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wind.ui'
 #
-# Created: Thu Apr 26 11:37:20 2012
+# Created: Fri May  4 12:44:28 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -137,7 +137,7 @@ class Ui_MainWindow(object):
         self.pause.setFlat(True)
         self.pause.setObjectName(_fromUtf8("pause"))
         self.songprg_num = QtGui.QLabel(self.frame)
-        self.songprg_num.setGeometry(QtCore.QRect(250, 50, 91, 20))
+        self.songprg_num.setGeometry(QtCore.QRect(250, 50, 121, 20))
         self.songprg_num.setText(_fromUtf8(""))
         self.songprg_num.setObjectName(_fromUtf8("songprg_num"))
         self.songprg = QtGui.QSlider(self.frame)
