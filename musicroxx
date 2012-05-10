@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4 import QtGui
 from PyQt4 import QtCore
+import gdata.youtube, gdata.youtube.service
 from ui.wind import Ui_MainWindow
 import mpd, os, sys, time, sched, datetime, socket, signal
 
@@ -305,6 +306,8 @@ class MainWindow(QtGui.QMainWindow):
     # Search threads
     QtCore.QObject.connect(self.thread_search, \
         self.thread_search.library_search_signal, self.act_library_search)
+    QtCore.QObject.connect(self.thread_search, \
+        self.thread_search.youtube_search_signal, self.act_youtube_search)
 
     self.thread_song.start()
     self.thread_library.start()
@@ -340,10 +343,23 @@ class MainWindow(QtGui.QMainWindow):
       item = QtGui.QListWidgetItem(filename)
       item.setText(filename)
       self.ui.search.addItem(item)
+  
+  def act_youtube_search(self, feed):
+    self.ui.search.clear()
+    for entry in feed.entry:
+      item = QtGui.QListWidgetItem()
+      item.setText(entry.title.text)
+      item.setData(QtCore.Qt.UserRole, entry.GetSwfUrl())
+      self.ui.search.addItem(item)
 
   def add_searched_item(self, item):
     filename = item.text()
-    self.client.add(filename)
+    try:
+      self.client.add(filename)
+    except mpd.CommandError:
+      url = str(item.data(QtCore.Qt.UserRole).toString())
+      print url
+
     self.act_playlist()
 
   def update_db(self):
@@ -562,6 +578,7 @@ class retrieve_search(QtCore.QThread):
     QtCore.QThread.__init__(self, parent)
     self.client = MPD(host, port)
     self.library_search_signal = QtCore.SIGNAL("library_search_thread")
+    self.youtube_search_signal = QtCore.SIGNAL("youtube_search_thread")
     self.exiting = False
 
   def library_search(self, all_terms):
@@ -579,6 +596,16 @@ class retrieve_search(QtCore.QThread):
 
       self.emit(self.library_search_signal, songs)
 
+  def youtube_search(self, term):
+    yt_service = gdata.youtube.service.YouTubeService()
+    query = gdata.youtube.service.YouTubeVideoQuery()
+    query.vq = term
+    query.orderby = 'viewCount'
+    query.racy = 'include'
+    query.max_results = '20'
+    feed = yt_service.YouTubeQuery(query)
+    self.emit(self.youtube_search_signal, feed)
+
   def __del__(self):
     self.exiting = True
     self.wait()
@@ -586,6 +613,9 @@ class retrieve_search(QtCore.QThread):
   def update(self, term, all_terms):
     if term == 'l':
       self.library_search(all_terms)
+
+    if term == 'yt':
+      self.youtube_search(all_terms)
 
   def run(self):
     self.scheduler.run()
